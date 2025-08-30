@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستەمی فرۆشتنی لۆبیا</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #16a085 0%, #27ae60 50%, #2ecc71 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: #27ae60;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .bean-types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .bean-item {
+            background: #e8f5e8;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .bean-item::after {
+            content: attr(data-key);
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #27ae60;
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .bean-item:hover, .bean-item.selected {
+            border-color: #27ae60;
+            background: #d4edda;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .bean-emoji {
+            font-size: 2.5em;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .bean-name {
+            font-weight: bold;
+            color: #27ae60;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #a7d7c5;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #27ae60;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+        }
+        
+        .price-calculator {
+            background: #e8f5e8;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #a7d7c5;
+        }
+        
+        .total-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            margin: 15px 0;
+            background: #27ae60;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+        
+        .reports-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #27ae60, #16a085);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .sales-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #a7d7c5;
+            border-radius: 8px;
+        }
+        
+        .sale-item {
+            padding: 15px;
+            border-bottom: 1px solid #a7d7c5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sale-item:hover {
+            background: #e8f5e8;
+        }
+        
+        .debt-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .paid-badge {
+            background: #27ae60;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #a7d7c5;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: #27ae60;
+            border-bottom-color: #27ae60;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .bean-types-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .bean-pattern {
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2327ae60' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+        }
+    </style>
+</head>
+<body class="bean-pattern">
+    <div class="container">
+        <div class="header">
+            <h1>🫘 سیستەمی فرۆشتنی لۆبیا 🌱</h1>
+            <p>سیستەمێکی تایبەت بۆ فرۆشتنی جۆرە جیاوازەکانی لۆبیا</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- فرۆشتن -->
+            <div class="card">
+                <h2>فرۆشتنی تازە</h2>
+                
+                <div class="bean-types-grid" style="grid-template-columns: 1fr; max-width: 300px; margin: 0 auto;">
+                    <div class="bean-item selected" data-key="G" onclick="selectBean('لۆبیای سەوز', '🟢', 4200)" style="background: #d4edda; border-color: #27ae60;">
+                        <span class="bean-emoji">🟢</span>
+                        <div class="bean-name">لۆبیای سەوز</div>
+                    </div>
+                </div>
+                
+                <div class="price-calculator">
+                    <div class="input-group">
+                        <label>1️⃣ جۆری لۆبیای هەڵبژێردراو:</label>
+                        <input type="text" id="selectedBean" readonly value="لۆبیای سەوز 🟢" 
+                               style="font-size: 18px; font-weight: bold; text-align: center; background: #d4edda; border-color: #27ae60;">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>2️⃣ نرخی یەک کیلۆ (دینار):</label>
+                        <input type="number" id="pricePerKg" value="4200" 
+                               style="font-size: 20px; font-weight: bold; text-align: center;"
+                               onkeydown="handleEnterKey(event, 'weight')" 
+                               oninput="calculateTotal()">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>3️⃣ بڕ (کیلۆ):</label>
+                        <input type="number" step="0.1" id="weight" placeholder="کیلۆ بنوسە" 
+                               style="font-size: 20px; font-weight: bold; text-align: center;"
+                               onkeydown="handleEnterKey(event, 'customerName')" 
+                               oninput="calculateTotal()">
+                    </div>
+                    
+                    <div class="total-display" id="totalPrice">
+                        💰 کۆی گشتی: 0 دینار
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>4️⃣ ناوی کڕیار:</label>
+                    <input type="text" id="customerName" placeholder="ناوی کڕیار بنوسە" 
+                           style="font-size: 18px; font-weight: bold; text-align: center;"
+                           onkeydown="handleEnterKey(event, 'paymentType')">
+                </div>
+                
+                <div class="input-group">
+                    <label>5️⃣ جۆری پارەدان:</label>
+                    <select id="paymentType" style="font-size: 18px; font-weight: bold; text-align: center;"
+                            onkeydown="handleEnterKey(event, 'addSaleBtn')">
+                        <option value="پارەدراو">💵 پارەدراو</option>
+                        <option value="قەرز">📝 قەرز</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" id="addSaleBtn" onclick="addSale()" 
+                            style="font-size: 18px; padding: 15px;">
+                        ✅ فرۆشتن تەواو
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearForm()" 
+                            style="font-size: 16px; padding: 15px;">
+                        🔄 پاککردنەوە
+                    </button>
+                </div>
+            </div>
+            
+            <!-- کڕیارەکان -->
+            <div class="card">
+                <h2>بەڕێوەبردنی کڕیارەکان</h2>
+                
+                <div class="input-group">
+                    <label>گەڕان بە ناو:</label>
+                    <input type="text" id="searchCustomer" placeholder="ناوی کڕیار بنوسە" oninput="searchCustomers()">
+                </div>
+                
+                <div id="customersList" class="sales-list">
+                    <!-- لێرە کڕیارەکان پیشان دەدرێن -->
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-secondary" onclick="showDebtCustomers()">💳 کڕیارەی قەرزدار</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ڕاپۆرتەکان - شاراوە -->
+        <div class="reports-section" id="reportsSection" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>📊 ڕاپۆرت و ئامار</h2>
+                <button class="btn btn-secondary" onclick="hideReports()" style="padding: 8px 15px;">
+                    ❌ داخستن
+                </button>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('daily')">ئەمڕۆ</div>
+                <div class="tab" onclick="showTab('beans')">لۆبیاکان</div>
+                <div class="tab" onclick="showTab('customers')">کڕیارەکان</div>
+                <div class="tab" onclick="showTab('debts')">قەرزەکان</div>
+                <div class="tab" onclick="showTab('detailed')">وردەکاری</div>
+            </div>
+            
+            <div id="daily-tab" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" id="todayTotal">0</span>
+                        <div class="stat-label">💰 کۆی فرۆشتنی ئەمڕۆ</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="todayDebt">0</span>
+                        <div class="stat-label">📝 قەرزی ئەمڕۆ</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="todayPaid">0</span>
+                        <div class="stat-label">💵 پارەدراوی ئەمڕۆ</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="todaySales">0</span>
+                        <div class="stat-label">🛒 ژمارەی فرۆشتن</div>
+                    </div>
+                </div>
+                
+                <div class="sales-list" style="margin-top: 20px;">
+                    <h3 style="padding: 15px; background: #e8f5e8; margin: 0; color: #27ae60;">فرۆشتنەکانی ئەمڕۆ</h3>
+                    <div id="todaySalesList"></div>
+                </div>
+            </div>
+            
+            <div id="beans-tab" class="tab-content" style="display: none;">
+                <div id="beansReport"></div>
+            </div>
+            
+            <div id="customers-tab" class="tab-content" style="display: none;">
+                <div id="customersReport"></div>
+            </div>
+            
+            <div id="debts-tab" class="tab-content" style="display: none;">
+                <div id="debtsReport"></div>
+            </div>
+            
+            <div id="detailed-tab" class="tab-content" style="display: none;">
+                <div id="detailedReport"></div>
+            </div>
+        </div>
+        
+        <!-- دوگمەی ڕاپۆرت -->
+        <div style="position: fixed; bottom: 20px; left: 20px; z-index: 1000;">
+            <button class="btn btn-primary" onclick="showReports()" id="showReportsBtn" 
+                    style="padding: 15px 20px; font-size: 16px; border-radius: 50px; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);">
+                📊 ڕاپۆرت
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // داتاکان لە میمۆری کۆگا دەکەین
+        let sales = [];
+        let customers = {};
+        let selectedBean = null;
+        
+        // جۆرەکانی لۆبیا - تەنها لۆبیای سەوز
+        const beans = {
+            'لۆبیای سەوز': { emoji: '🟢', defaultPrice: 4200 }
+        };
+        
+        // دەستپێکردنی سیستەم بە لۆبیای سەوز
+        window.onload = function() {
+            selectedBean = 'لۆبیای سەوز';
+            document.getElementById('selectedBean').value = 'لۆبیای سەوز 🟢';
+            document.getElementById('pricePerKg').value = 4200;
+            
+            // فۆکەس بکە لەسەر خانەی کیلۆ
+            document.getElementById('pricePerKg').focus();
+            document.getElementById('pricePerKg').select();
+            
+            updateReports();
+            addSampleData();
+        };
+        
+        // فەنکشنی گواستنەوە لەگەڵ Enter
+        function handleEnterKey(event, nextFieldId) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                
+                if (nextFieldId === 'addSaleBtn') {
+                    // ئەگەر دوا خانە بوو، فرۆشتن تەواو بکە
+                    addSale();
+                } else {
+                    // بڕۆ بۆ خانەی داهاتوو
+                    const nextField = document.getElementById(nextFieldId);
+                    if (nextField) {
+                        nextField.focus();
+                        if (nextField.type === 'number') {
+                            nextField.select();
+                        }
+                    }
+                }
+            }
+        }
+        
+        // لۆبیا هەڵبژاردن
+        function selectBean(name, emoji, price) {
+            // هەموو لۆبیاکان clear بکە
+            document.querySelectorAll('.bean-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // ئەم لۆبیایە وەک هەڵبژێردراو نیشان بدە
+            event.currentTarget.classList.add('selected');
+            
+            selectedBean = name;
+            document.getElementById('selectedBean').value = name + ' ' + emoji;
+            document.getElementById('pricePerKg').value = price;
+            
+            // کورسەر بگوازەوە بۆ نرخ و هەڵیبژێرە
+            const priceField = document.getElementById('pricePerKg');
+            priceField.focus();
+            priceField.select();
+            
+            calculateTotal();
+        }
+        
+        // حسابکردنی کۆی نرخ
+        function calculateTotal() {
+            const price = parseFloat(document.getElementById('pricePerKg').value) || 0;
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const total = price * weight;
+            
+            let display = '';
+            if (total > 0) {
+                display = `💰 کۆی گشتی: ${total.toLocaleString()} دینار`;
+            } else {
+                display = '💰 کۆی گشتی: 0 دینار';
+            }
+            
+            document.getElementById('totalPrice').textContent = display;
+            
+            // ڕەنگی سەوز بکە ئەگەر نرخ هەبوو
+            const totalEl = document.getElementById('totalPrice');
+            if (total > 0) {
+                totalEl.style.background = '#27ae60';
+                totalEl.style.transform = 'scale(1.05)';
+                totalEl.style.boxShadow = '0 6px 20px rgba(39, 174, 96, 0.4)';
+            } else {
+                totalEl.style.background = '#27ae60';
+                totalEl.style.transform = 'scale(1)';
+                totalEl.style.boxShadow = '0 4px 15px rgba(39, 174, 96, 0.3)';
+            }
+        }
+        
+        // زیادکردنی فرۆشتن
+        function addSale() {
+            const bean = selectedBean;
+            const price = parseFloat(document.getElementById('pricePerKg').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const customer = document.getElementById('customerName').value.trim();
+            const paymentType = document.getElementById('paymentType').value;
+            
+            if (!bean || !price || !weight || !customer) {
+                alert('تکایە هەموو خانەکان پڕبکەرەوە!');
+                return;
+            }
+            
+            const total = price * weight;
+            const sale = {
+                id: Date.now(),
+                date: new Date(),
+                bean: bean,
+                emoji: beans[bean]?.emoji || '🫘',
+                price: price,
+                weight: weight,
+                total: total,
+                customer: customer,
+                paymentType: paymentType
+            };
+            
+            sales.push(sale);
+            
+            // کڕیار زیاد بکە یان update بکە
+            if (!customers[customer]) {
+                customers[customer] = {
+                    name: customer,
+                    totalPurchases: 0,
+                    totalDebt: 0,
+                    sales: []
+                };
+            }
+            
+            customers[customer].totalPurchases += total;
+            customers[customer].sales.push(sale);
+            
+            if (paymentType === 'قەرز') {
+                customers[customer].totalDebt += total;
+            }
+            
+            alert(`✅ فرۆشتن تەواو بوو!\n${bean} - ${weight} کیلۆ\nکڕیار: ${customer}\nکۆی گشتی: ${total.toLocaleString()} دینار`);
+            
+            clearForm();
+            updateReports();
+        }
+        
+        // پاککردنەوەی فۆڕم - تەنها لۆبیای سەوز
+        function clearForm() {
+            selectedBean = 'لۆبیای سەوز';
+            document.getElementById('selectedBean').value = 'لۆبیای سەوز 🟢';
+            document.getElementById('pricePerKg').value = '4200';
+            document.getElementById('weight').value = '';
+            document.getElementById('customerName').value = '';
+            document.getElementById('paymentType').value = 'پارەدراو';
+            document.getElementById('totalPrice').textContent = '💰 کۆی گشتی: 0 دینار';
+            
+            const totalEl = document.getElementById('totalPrice');
+            totalEl.style.background = '#27ae60';
+            totalEl.style.transform = 'scale(1)';
+            totalEl.style.boxShadow = '0 4px 15px rgba(39, 174, 96, 0.3)';
+            
+            // فۆکەس بکە لەسەر خانەی کیلۆ
+            document.getElementById('weight').focus();
+        }
+        
+        // گەڕان بە کڕیارەکان
+        function searchCustomers() {
+            const searchTerm = document.getElementById('searchCustomer').value.toLowerCase();
+            const customersList = document.getElementById('customersList');
+            
+            customersList.innerHTML = '';
+            
+            Object.values(customers).forEach(customer => {
+                if (customer.name.toLowerCase().includes(searchTerm)) {
+                    const customerDiv = document.createElement('div');
+                    customerDiv.className = 'sale-item';
+                    customerDiv.innerHTML = `
+                        <div>
+                            <strong>${customer.name}</strong><br>
+                            <small>کۆی کڕین: ${customer.totalPurchases.toLocaleString()} دینار</small>
+                            ${customer.totalDebt > 0 ? `<span class="debt-badge">قەرز: ${customer.totalDebt.toLocaleString()}</span>` : '<span class="paid-badge">بێ قەرز</span>'}
+                        </div>
+                        <button class="btn btn-primary" onclick="showCustomerDetails('${customer.name}')" style="padding: 5px 10px; font-size: 12px;">وردەکارI</button>
+                    `;
+                    customersList.appendChild(customerDiv);
+                }
+            });
+        }
+        
+        // پیشاندانی کڕیارەی قەرزدار
+        function showDebtCustomers() {
+            const customersList = document.getElementById('customersList');
+            customersList.innerHTML = '';
+            
+            Object.values(customers).forEach(customer => {
+                if (customer.totalDebt > 0) {
+                    const customerDiv = document.createElement('div');
+                    customerDiv.className = 'sale-item';
+                    customerDiv.innerHTML = `
+                        <div>
+                            <strong>${customer.name}</strong><br>
+                            <span class="debt-badge">قەرز: ${customer.totalDebt.toLocaleString()} دینار</span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="payDebt('${customer.name}')" style="padding: 5px 10px; font-size: 12px;">قەرز دان</button>
+                    `;
+                    customersList.appendChild(customerDiv);
+                }
+            });
+            
+            if (customersList.innerHTML === '') {
+                customersList.innerHTML = '<div class="sale-item">🎉 هیچ کڕیارێکی قەرزدارتان نییە!</div>';
+            }
+        }
+        
+        // قەرز دان
+        function payDebt(customerName) {
+            if (customers[customerName
